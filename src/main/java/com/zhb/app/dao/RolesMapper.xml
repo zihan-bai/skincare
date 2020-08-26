@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhb.app.dao.RolesMapper">
+
+<select id="listAllRolesInfo"  resultType="Roles">
+select rid, rname, rdesc from roles 
+
+</select>
+
+<select id="getRoleInfo"   resultType="Roles">
+SELECT  users_roles.uid , roles.`rname`,roles.`rdesc`
+FROM roles LEFT JOIN users_roles
+ON roles.rid = users_roles.rid
+<where>
+ users_roles.uid  = #{rid}
+</where> 
+
+
+</select>
+
+
+<update id="deleteRole">
+
+DELETE  FROM users_roles 
+where uid in 
+		 <foreach item="item" index="index" collection ="array" open="(" separator ="," close=")">
+		     #{item}
+		 </foreach>
+</update>
+
+
+
+
+
+
+</mapper>

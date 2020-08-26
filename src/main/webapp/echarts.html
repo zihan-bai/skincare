@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <meta charset="UTF-8">
+    <!-- 引入 ECharts 文件 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 "/>
+    <title>MyEcharts</title>
+    <style>
+    
+    .box{
+        width:800px;
+        height:800px;
+        background-color:rosybrown;
+    }
+     
+    .box1{
+        width:800px;
+        height:800px;
+        background-color:rgb(241, 236, 166);
+    }
+    
+    </style>
+    <link rel="stylesheet" href="css/index.css"/> 
+    <!--引入-->
+    <script src="echarts/echarts.min.js"></script>
+</head>
+<body>
+    <!--容器-->
+<div class="box"></div>
+<div class="box1"></div>
+<!--图表-->
+<script src="js/barEcharts.js"></script>
+<script src="js/pieEcharts.js"></script>
+<script>
+
+
+
+
+
+
+
+// var myChart = echarts.init(document.querySelector(".box"));
+///1.下载并引入echarts.js文件
+//2. 准备一个具有大小的DOM容器, 长宽
+//3.实例化echarts echarts.init(dom容器);
+//4.指定配置项和数据
+//5. 把配置项给实例对象
+// var option = {
+//             title: {
+//                 text: 'ECharts 入门示例'
+//             },
+//             tooltip: {},
+//             legend: {
+//                 data:['销量']
+//             },
+//             xAxis: {
+//                 data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
+//             },
+//             yAxis: {},
+//             series: [{
+//                 name: '销量',
+//                 type: 'bar',
+//                 data: [5, 20, 36, 10, 10, 20]
+//             }]
+//         };
+
+
+//color:设置不同颜色:后面是数组
+//title:标题
+//tooltip: 图表的提示框组件
+//toolbox: 工具箱组件.可以图片另存为
+//legend:图例组件
+
+//grid: 网格配置,可以控制直角坐标系图的大小 left, right...值越大,图越小
+//containLabel: true,显示刻度标签
+//xAxis: x轴
+//yAxis: y轴
+//type:类目(一月二月), value:值(100,200)
+//boundarygap: 是否和Y轴有缝隙
+//data:数据
+//series: 系列图表形式: 决定这显示哪种类型的图表
+//series 里有了name值,则legend里面的data可以删除
+//stack:数据堆叠: 一般不需要
+
+
+
+
+
+
+
+        
+
+//myChart.setOption(option);
+
+
+
+
+
+</script>
+
+</body>
+</html>

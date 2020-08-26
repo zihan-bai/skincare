@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhb.app.dao.UsageMapper">
+
+
+<select id="listUsagePage" resultType="Uses">
+SELECT useid,uses.pid, pname,pprice,pdiscount, usedate, feedback FROM uses
+LEFT JOIN product ON uses.pid = product.`pid`
+
+
+		<where>
+		 useflag=1
+			<if test="pname!=null and pname !=''">
+			and pname like '%${pname}%'
+			</if>
+		</where>
+		
+		limit #{page},#{rows}
+
+
+
+
+</select>
+
+	
+	<!-- count -->
+	<select id="countUsage" resultType="int">
+	 select count(useid) from uses  LEFT JOIN product ON uses.pid = product.`pid`
+
+	 <where>
+	 	 useflag=1
+	 	<if test="pname!=null and pname !=''">
+			pname like '%${pname}%'
+			</if>
+	 </where>
+	
+	</select>
+
+
+
+	<!-- add user info -->
+	<insert id="saveUsageInfo">
+	   insert into uses (pid,usedate) values(#{pid},#{usedate})
+	</insert>
+
+
+
+<!-- delete usage info -->
+
+<update id="deleteUsageInfo">
+
+delete from uses where useid = #{useid}
+
+
+</update>
+
+
+<update id="addFeedback">
+UPDATE  uses SET feedback = #{feedback} WHERE useid = #{useid}
+</update>
+
+
+
+
+
+<!-- purchase -->
+
+<select id="purchaseCount" resultType="int">
+	
+SELECT COUNT(*) FROM (
+SELECT purchaseyear ,ROUND( SUM( pprice *pdiscount),2) as totalprice FROM 
+(
+SELECT SUBSTRING(purchasedate,1,4)AS purchaseyear, pprice, pdiscount
+FROM product
+)AS t
+GROUP BY purchaseyear) AS t
+
+<if test="years!=null and years!=''">
+				HAVING purchaseyear  =#{years}
+			</if>
+			
+	
+
+			
+	</select>
+
+	<select id="yearPurchaseInfo" resultType="PurchaseAnalysis">
+	
+SELECT purchaseyear ,ROUND( SUM( pprice *pdiscount),2) as totalprice FROM 
+(
+SELECT SUBSTRING(purchasedate,1,4)AS purchaseyear, pprice, pdiscount
+FROM product
+)AS t
+GROUP BY purchaseyear
+
+			<if test="years!=null and years!=''">
+				HAVING purchaseyear  =#{years}
+			</if>
+			
+
+		limit #{page},#{rows}
+	</select>
+
+<!-- usage -->
+
+<select id="usageCount" resultType="int">
+SELECT COUNT(*) FROM (SELECT SUBSTRING(usedate,1,4) AS usageyear, uses.pid, SUM(pprice*pdiscount) FROM uses LEFT JOIN product ON uses.pid = product.pid GROUP BY usageyear)AS t 
+
+</select>
+
+<select id="yearUsageInfo" resultType="UsageAnalysis">
+SELECT SUBSTRING(usedate,1,4) AS useyear, uses.pid, ROUND (SUM(pprice*pdiscount),2) as totalprice FROM uses LEFT JOIN product ON uses.pid = product.pid GROUP BY useyear
+
+
+</select>
+
+
+
+
+</mapper>

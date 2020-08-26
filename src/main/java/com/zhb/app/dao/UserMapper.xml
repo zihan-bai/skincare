@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhb.app.dao.UserMapper">
+
+ 
+<!-- 登录 -->
+ 		<select id="login" resultMap="userMapper">
+			select u.uid,u.uname,u.password,r.rid,r.rname,r.rdesc from users as u
+			left join users_roles as ur 
+			on u.uid = ur.uid
+			left join roles as r 
+			on ur.rid = r.rid
+			where 
+			u.uname = #{uname}
+		</select>
+		
+		<resultMap type="Users" id="userMapper">
+			<!-- 主键   和bean中的属性相同           和数据库中一致-->
+			<id property="uid" column="UID"></id>
+			<!-- bean中其他属性-->
+			<result property="uname" column="UNAME"/>
+			<result property="password" column="password"/>
+			<!-- bean中的集合(嵌套)属性 -->
+			<collection property="list" ofType="Roles">
+				<!-- 主键 -->
+				<id property="rid" column="RID"/>
+				<!-- 其他属性 -->
+				<result property="rname" column="RNAME"/> 
+				<result property="rdesc" column="RDESC"/>
+			</collection>
+		</resultMap>
+	
+	<!-- 用户角色表分页查询 -->
+	
+	<select id="listUsersPage" resultMap="userMapper">
+		select u.uid,u.uname,u.password,r.rid,r.rname,r.rdesc from users as u
+			left join users_roles as ur 
+			on u.uid = ur.uid
+			left join roles as r 
+			on ur.rid = r.rid
+		<where>
+			<if test="uname!=null and uname !=''">
+			u.uname like '%${uname}%'
+			</if>
+		</where>
+		limit #{page},#{rows}
+	</select>
+	
+	
+	<!-- 计算用户总数 -->
+	<select id="countUsers" resultType="int">
+	 select count(uid) from users as u
+	 <where>
+	 	<if test="uname!=null and uname !=''">
+			u.uname like '%${uname}%'
+			</if>
+	 </where>
+	
+	</select>
+	
+	
+	<!-- add user info -->
+	<insert id="saveUserInfo">
+	   insert into users (uname, password) values(#{uname},#{password})
+	</insert>
+	
+	<!-- delete one user info  -->
+	<update id="removeOneUserInfo">
+	    delete from users where uid = #{uid}
+	</update>
+	
+	<!-- batch delete -->
+	<update id ="removeBatchUsersInfo">
+		delete from users where uid in 
+		 <foreach item="item" index="index" collection ="array" open="(" separator ="," close=")">
+		     #{item}
+		 </foreach>
+	</update>
+	
+	<!-- update user info -->
+	<update id="updateUserInfo">
+	     update users set uname = #{uname}, password = #{password} where uid =#{uid}
+	</update>
+	
+	<!-- add role -->
+	<insert id="saveRoleInfo">
+	   insert into users_roles (uid, rid) values (#{uid},#{rid})
+	</insert>
+ 
+
+ 
+ 
+ 
+</mapper>

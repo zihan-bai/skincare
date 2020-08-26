@@ -1,0 +1,24 @@
+server:
+ servlet:
+   context-path: /skincare 
+ port: 8000
+ 
+#springboot: DB connection数据库连接信息
+spring:
+  datasource:
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/skincare
+    
+#mybatis 相关环境,包扫描,
+
+mybatis:
+  mapper-locations: /com/zhb/app/dao/*Mapper.xml
+  type-aliases-package: com.zhb.app.bean
+  
+#配置SQL日志,不需要再导入log4j jar包了,只用配置就好了
+logging:  level:    com:
+     xasxt:
+      app:
+       mapper: TRACE

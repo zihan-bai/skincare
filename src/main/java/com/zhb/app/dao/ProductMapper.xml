@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhb.app.dao.ProductMapper">
+
+<sql  id="commonSql">
+SELECT pid, pname, pbrand,psize,pprice,pdiscount,plocation,producedate,purchasedate,expiration,pdesc,product.cateid,catename
+FROM product LEFT JOIN category ON product.`cateid`= category.`cateid`
+
+</sql>
+	
+	<!-- listPage -->
+	
+<select id="listProductPage"  resultType="Product">
+ <include refid="commonSql"/>
+
+
+
+ <where>
+   useflag=0
+         <if test="pname!=null and pname!=''">
+               and product.pname like '%${pname}%'
+         </if>
+         
+ </where>
+	limit #{page},#{rows}
+</select>
+	
+	
+	<!-- count -->
+	<select id="countProduct" resultType="int">
+	 select count(pid) from product 
+ <where>
+ useflag=0
+         <if test="pname!=null and pname!=''">
+               product.pname like '%${pname}%'
+         </if>
+ </where>
+	
+	
+	</select>
+	
+	
+	<!-- add user info -->
+	<insert id="saveProductInfo">
+	   		insert into
+		product(pname, pbrand,psize,pprice,pdiscount,plocation,producedate,purchasedate,expiration,pdesc,cateid)
+		values
+		(#{pname},#{pbrand},#{psize},#{pprice},#{pdiscount},#{plocation},#{producedate},#{purchasedate},#{expiration},#{pdesc},#{cateid})
+	</insert>
+	
+	
+	<!-- delete one user info  -->
+	<update id="removeOneProductInfo">
+	    delete from product where pid = #{pid}
+	</update>
+
+	<!-- batch delete -->
+	<update id ="removeBatchProductInfo">
+		delete from product where pid in 
+		 <foreach item="item" index="index" collection ="array" open="(" separator ="," close=")">
+		     #{item}
+		 </foreach>
+	</update>
+	
+	<!-- update user info -->
+	<update id="updateProductInfo">
+	     update product set pname = #{pname}, pbrand = #{pbrand} ,psize = #{psize},pprice = #{pprice}, pdiscount = #{pdiscount},plocation = #{plocation}, 
+	     producedate = #{producedate},purchasedate = #{purchasedate}, expiration = #{expiration},pdesc = #{pdesc},cateid = #{cateid}
+
+	      where pid =#{pid}
+	</update>
+
+ 
+
+ <!-- get product by id -->
+ 
+ <select id="getProductByID" resultType="Product">
+ 
+ select * from product where pid =#{pid}
+ </select>
+ 
+ 
+ <!-- setUseFlag -->
+ <update id="setUseFlag">
+ update product set useflag=1 where pid =#{pid}
+ 
+ 
+ </update>
+ 
+
+ 
+ <!-- setUseFlag -->
+ <update id="undoUsageInfo">
+ update product set useflag=0 where pid =#{pid}
+ 
+ 
+ </update>
+
+
+<!-- get year -->
+<select id="getPurchaseYear" resultType="String">
+SELECT SUBSTRING(purchasedate, 1,4)AS years FROM product GROUP BY years
+</select>
+
+<!-- getTotalPurchase -->
+<select id="getTotalPurchase" resultType="Double">
+SELECT ROUND( SUM( pprice *pdiscount),2) AS totalpurchase,SUBSTRING(purchasedate, 1,4)AS years FROM product GROUP BY years
+having years=#{years}
+
+</select>
+
+
+<!-- getTotalUsage -->
+<select id="getTotalUsage" resultType="Double">
+
+SELECT ROUND( SUM( pprice *pdiscount),2) AS totalpurchase,SUBSTRING(usedate, 1,4)AS years FROM uses LEFT JOIN product ON product.pid = uses.pid GROUP BY years
+having years =#{years}
+</select>
+
+
+<!-- yearPieChartCategory -->
+<select id="yearPieChartCategory" resultType="CategoryYears">
+
+SELECT useyear, totalprice, category.catename FROM 
+(
+SELECT useyear,   ROUND( SUM( pprice *pdiscount),2) AS 'totalprice' , cateid
+FROM (
+SELECT SUBSTRING(usedate,1,4) AS useyear,  useid, pid FROM uses
+) AS usesbyyear LEFT JOIN product ON usesbyyear.pid = product.pid 
+GROUP BY usesbyyear.useyear, cateid HAVING useyear=#{years}
+) AS t LEFT JOIN category ON category.cateid = t.cateid
+
+
+</select>
+
+
+<select id="listYears" resultType="String">
+SELECT  SUBSTRING(purchasedate, 1,4) AS years FROM product GROUP BY years
+
+</select>
+
+</mapper>
